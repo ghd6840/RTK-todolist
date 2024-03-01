@@ -2,14 +2,20 @@ import React from 'react';
 
 import { useDispatch } from 'react-redux';
 
-import { deleteTodo } from '../../slice/todoSlice';
+import { deleteTodo, toggleTodo } from '../../slice/todoSlice';
 import { AppDispatch } from '../../store/store';
 import styled from "styled-components";
 
-interface Todo {
-  id: string;
-  text: string;
-  completed: boolean;
+export interface Todo {
+    id: string;
+    text: string;
+    completed: boolean;
+}
+
+interface TodoProps {
+    completed: boolean;
+    text: string;
+    onClick: () => any;
 }
 
 const ListItem = styled.li`
@@ -25,18 +31,36 @@ const ListItem = styled.li`
     }
 `;
 
+function TodoListItem({ completed, text, onClick }: TodoProps) {
+    return (
+      <div
+        onClick={onClick}
+        style={{
+          textDecoration: completed ? "line-through" : "none",
+          display: 'inline-block',
+          width: '85%'
+        }}
+      >
+        {text}
+      </div>
+    );
+  }
+
 function TodoItem({ todo }: { todo: Todo }) {
   const dispatch = useDispatch<AppDispatch>();
   return (
         <ListItem
           key={todo.id}
+        >
+          <TodoListItem key={todo.id}
+            {...todo}
+            onClick={() => dispatch(toggleTodo(todo))}
+          />
+          <div style={{ float: 'right', cursor: 'pointer' }} 
           // dispatch 추가
           onClick={() => {
             dispatch(deleteTodo(todo.id));
-          }}
-        >
-          {todo.text}{' '}
-          <div style={{ float: 'right', cursor: 'pointer' }}>Delete</div>
+          }}>Delete</div>
         </ListItem>
   );
 }

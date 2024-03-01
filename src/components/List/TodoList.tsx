@@ -5,7 +5,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { addTodo } from '../../slice/todoSlice';
 import { AppDispatch, RootState } from '../../store/store';
 import styled from 'styled-components';
-import TodoItem from '../Item/TodoItem';
+import TodoItem, { Todo } from '../Item/TodoItem';
+import { VisibilityFilter } from '../../slice/visibilityFilterSlice';
+import Footer from '../VisibilityFilter/Footer';
 
 const Wrapper = styled.div`
     width: calc(100% - 32px);
@@ -36,12 +38,27 @@ const Button = styled.button`
 const List = styled.ul`
     display: block;
     padding: 0;
+    list-style-type: none; 
 `;
+
+const getVisibleTodos = (todos: Todo[], filter: VisibilityFilter) => {
+    switch (filter) {
+      case VisibilityFilter.ShowAll:
+        return todos;
+      case VisibilityFilter.ShowCompleted:
+        return todos.filter(t => t.completed);
+      case VisibilityFilter.ShowActive:
+        return todos.filter(t => !t.completed);
+      default:
+        throw new Error("Unknown filter: " + filter);
+    }
+  };
+
 
 // todoItem 컴포넌트 추가
 
 function TodoList() {
-  const todoList = useSelector((state: RootState) => state.todos);
+  const todoList = useSelector((state: RootState) => getVisibleTodos(state.todos, state.visibilityFilter));
   const dispatch = useDispatch<AppDispatch>();
 
   // console.log(dispatch);
@@ -76,6 +93,7 @@ function TodoList() {
               ))}
             </List>
           </div>
+          <Footer />
         </PageMain>
     </Wrapper>
   );

@@ -13,9 +13,14 @@ interface Todo {
 const initialState: Todo[] = [
   {
     id: uuidv4(),
-    text: '테스트',
+    text: 'Active todo',
     completed: false,
   },
+  {
+    id: uuidv4(),
+    text: 'Completed todo',
+    completed: true,
+  }
 ];
 
 export const todoSlice = createSlice({
@@ -26,6 +31,13 @@ export const todoSlice = createSlice({
     addTodo: (state, action: PayloadAction<string>) => {
       // const { text } = action.payload;
       state.push({ id: uuidv4(), text: action.payload, completed: false });
+    },
+    toggleTodo: (state, action: PayloadAction<Todo>) => {
+      let todo = state.find(todo => todo.id === action.payload.id);
+
+      if (todo) {
+        todo.completed = !todo.completed;
+      }
     },
     deleteTodo: (state, action: PayloadAction<string>) =>
       state.filter((item) => item.id !== action.payload),
@@ -40,7 +52,7 @@ export const todoSlice = createSlice({
   },
 });
 
-export const { addTodo, deleteTodo } = todoSlice.actions;
+export const { addTodo, toggleTodo, deleteTodo } = todoSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectTodos = (state: RootState) => state.todos;
